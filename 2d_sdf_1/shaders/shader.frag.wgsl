@@ -65,11 +65,10 @@ fn sd_moon(p: vec2<f32>, d: f32, ra: f32, rb: f32) -> f32 {
 }
 
 fn sdf(p: vec2<f32>) -> f32 {
+    let a = (sin(u.time) + 1.0) / 2.0;
+    let b = 1. - a;
     return
-        min(
-        sd_moon(p - vec2(-250., 0.), 100., 200., 130.),
-        sd_hexagram(p - vec2(250., 0.), 100.)
-    )
+        (sd_moon(p - vec2(-0., 0.), 100., 200., 130.) * a + sd_hexagram(p - vec2(0., 0.), 100.) * b) / 2.0
     ;
 }
 
