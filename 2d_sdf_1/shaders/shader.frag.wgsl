@@ -66,20 +66,34 @@ fn sd_moon(p: vec2<f32>, d: f32, ra: f32, rb: f32) -> f32 {
 
 fn sdf(p: vec2<f32>) -> f32 {
     let a = (sin(u.time) + 1.0) / 2.0;
-    let b = 1. - a;
-    return
-        (sd_moon(p - vec2(-0., 0.), 100., 200., 130.) * a + sd_hexagram(p - vec2(0., 0.), 100.) * b) / 2.0
-    ;
+    let b = 1.0 - a;
+    let moon = sd_moon(p - vec2(-0., 0.), 100., 200., 130.);
+    let star = sd_hexagram(p - vec2(0., 0.), 100.) - 12.;
+    var c = (a * moon + b * star) / 2.;
+
+    return c / 4.;
+    // return
+    //     (a * moon + b * star) / 2.0
+    // ;
 }
 
 @fragment
 fn main(in: VertexOutput) -> @location(0) vec4<f32> {
-    let color = vec3<f32>(0.0, 0.3, 0.9);
-    let scale = 1.;
+    let color1 = vec3<f32>(0.8, 0.8, 0.1) / 3.;
+    let color2 = vec3<f32>(0.0, 0.2, 0.8);
 
+    let a = (sin(u.time) + 1.0) / 2.0;
+    let b = 1. - a;
+    let color = (color1 * b + color2 * a) / 2.0;
+
+    let scale = 1.;
     let pos = u.resolution * in.uv / scale - u.resolution / 2.0 / scale;
 
     let dist = 1.0 / (sdf(pos));
+    var c = vec3(0.);
+    if dist <= 0. {
+        c = color;
+    }
 
     return vec4(abs(dist) * color, 1.0);
 }
